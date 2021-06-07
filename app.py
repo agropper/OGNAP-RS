@@ -18,7 +18,7 @@ SECRET_KEY = config("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-couch = couchdb.Server('http://couchdb00.hagopian.net:5984/')
+couch = couchdb.Server(config('COUCHDB_SERVER'))
 db = couch['hieofone2']
 
 # fake_users_db = {
