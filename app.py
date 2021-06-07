@@ -155,7 +155,8 @@ async def hello_world():
 @app.get("/items/{id}", response_class=HTMLResponse)
 async def read_item(request: Request, id: str):
     return templates.TemplateResponse("item.html", {"request": request, "id": id})
-    
-# @app.get("/files/{file_path:path}")
-# async def read_file(file_path: str):
-#    return {"file_path": file_path}
+
+@app.get("/static/QFVC-QR.png", response_class=HTMLResponse)
+@app.get("/static/QFVC.html", response_class=HTMLResponse)
+async def read_my_VC(current_user: User = Depends(get_current_active_user)):
+    return templates.TemplateResponse("QFVC.html")
