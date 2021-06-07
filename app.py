@@ -7,22 +7,27 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
+import couchdb
+from couchdb.mapping import Document, TextField
+
 # to get a string like this run:
 # openssl rand -hex 32
 SECRET_KEY = "e5a92e53646e46d29a7d67ec80107a9758296a8000b384f76773c9839d7b2e0c"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+couch = couchdb.Server('http://couchdb00.hagopian.net:5984/')
+db = couch['hieofone2']
 
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    }
-}
+# fake_users_db = {
+#    "johndoe": {
+#        "username": "johndoe",
+#        "full_name": "John Doe",
+#        "email": "johndoe@example.com",
+#        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
+#        "disabled": False,
+#    }
+#}
 
 class Token(BaseModel):
     access_token: str
@@ -97,7 +102,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+    user = get_user(db, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -110,7 +115,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
