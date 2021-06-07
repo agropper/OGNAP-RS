@@ -10,9 +10,11 @@ from pydantic import BaseModel
 import couchdb
 from couchdb.mapping import Document, TextField
 
+from decouple import config
+
 # to get a string like this run:
 # openssl rand -hex 32
-SECRET_KEY = "e5a92e53646e46d29a7d67ec80107a9758296a8000b384f76773c9839d7b2e0c"
+SECRET_KEY = config("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

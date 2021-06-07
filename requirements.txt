@@ -29,6 +29,7 @@ promise==2.3
 pyasn1==0.4.8
 pycparser==2.20
 pydantic==1.8.2
+python-decouple==3.4
 python-dotenv==0.17.1
 python-jose==3.3.0
 python-multipart==0.0.5
