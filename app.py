@@ -1,8 +1,12 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, Request, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
@@ -11,6 +15,8 @@ import couchdb
 from couchdb.mapping import Document, TextField
 
 from decouple import config
+
+
 
 # to get a string like this run:
 # openssl rand -hex 32
@@ -41,6 +47,10 @@ class TokenData(BaseModel):
 
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -142,6 +152,10 @@ async def read_own_items(current_user: User = Depends(get_current_active_user)):
 async def hello_world():
     return {"message": "Hello World"}
 
+@app.get("/items/{id}", response_class=HTMLResponse)
+async def read_item(request: Request, id: str):
+    return templates.TemplateResponse("item.html", {"request": request, "id": id})
+    
 # @app.get("/files/{file_path:path}")
 # async def read_file(file_path: str):
 #    return {"file_path": file_path}
