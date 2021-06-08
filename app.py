@@ -153,10 +153,12 @@ async def hello_world():
     return {"message": "Hello World"}
 
 @app.get("/items/{id}", response_class=HTMLResponse)
-async def read_item(request: Request, id: str):
-    return templates.TemplateResponse("item.html", {"request": request, "id": id})
+async def read_item(request: Request, id: str, current_user: User = Depends(get_current_active_user)):
+    return templates.TemplateResponse("item.html", {"request": request, "id": current_user.username})
 
-@app.get("/static/QFVC-QR.png", response_class=HTMLResponse)
-@app.get("/static/QFVC.html", response_class=HTMLResponse)
-async def read_my_VC(current_user: User = Depends(get_current_active_user)):
-    return templates.TemplateResponse("QFVC.html")
+# @app.get("/static/", response_class=HTMLResponse)
+# async def read_my_VC(request: Request, id: str, User = Depends(get_current_active_user)):
+# async def hello_world():
+#    return templates.TemplateResponse("QFVC.html")
+#    return [{"item_id": "Foo", "owner": current_user.username}]
+#    return templates.TemplateResponse("QFVC.html", {"request": request, "id": id})
