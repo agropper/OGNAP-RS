@@ -1,9 +1,11 @@
+import os
+
 from datetime import datetime, timedelta
 from typing import Optional
 
 from fastapi import Depends, FastAPI, Request, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -155,4 +157,8 @@ async def hello_world():
 @app.get("/items/{id}", response_class=HTMLResponse)
 async def read_item(request: Request, id: str, current_user: User = Depends(get_current_active_user)):
     return templates.TemplateResponse("item.html", {"request": request, "id": current_user.username})
+
+@app.get("/static/{path:path}")
+async def get_static_file(path: str, user = Depends(get_current_user)):
+  return FileResponse(os.path.join("static", path))
 
